@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nikita — Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.1);
+    --text: #f5f5f7;
+    --text-secondary: rgba(245,245,247,0.55);
+    --accent: #ffffff;
+    --glow-color: rgba(255,255,255,0.15);
+    --btn-donate: rgba(255,255,255,0.95);
+    --btn-donate-text: #000000;
+    --btn-support: rgba(255,255,255,0.06);
+    --btn-support-text: rgba(245,245,247,0.85);
+    --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* DAY THEME */
+  body.day {
+    --bg: #f5f5f7;
+    --surface: rgba(0,0,0,0.04);
+    --surface-hover: rgba(0,0,0,0.07);
+    --border: rgba(0,0,0,0.1);
+    --text: #1d1d1f;
+    --text-secondary: rgba(29,29,31,0.5);
+    --glow-color: rgba(0,0,0,0.08);
+    --btn-donate: #1d1d1f;
+    --btn-donate-text: #f5f5f7;
+    --btn-support: rgba(0,0,0,0.06);
+    --btn-support-text: rgba(29,29,31,0.75);
+  }
+
+  /* EVENING THEME */
+  body.evening {
+    --bg: #0d0d14;
+    --surface: rgba(120,100,255,0.06);
+    --surface-hover: rgba(120,100,255,0.1);
+    --border: rgba(120,100,255,0.15);
+    --text: #ececf4;
+    --text-secondary: rgba(236,236,244,0.5);
+    --glow-color: rgba(100,80,255,0.2);
+    --btn-donate: rgba(140,120,255,0.9);
+    --btn-donate-text: #ffffff;
+    --btn-support: rgba(120,100,255,0.1);
+    --btn-support-text: rgba(236,236,244,0.8);
+  }
+
+  * {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: background 0.8s var(--transition), color 0.8s var(--transition);
+    overflow: hidden;
+  }
+
+  /* AMBIENT BACKGROUND */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .ambient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.35;
+    transition: all 1.2s var(--transition);
+  }
+
+  .orb1 {
+    width: 600px; height: 600px;
+    top: -200px; left: -100px;
+    background: radial-gradient(circle, rgba(100,180,255,0.4), transparent 70%);
+    animation: drift1 12s ease-in-out infinite;
+  }
+
+  .orb2 {
+    width: 500px; height: 500px;
+    bottom: -150px; right: -100px;
+    background: radial-gradient(circle, rgba(180,255,140,0.3), transparent 70%);
+    animation: drift2 15s ease-in-out infinite;
+  }
+
+  body.day .orb1 { background: radial-gradient(circle, rgba(0,120,255,0.15), transparent 70%); }
+  body.day .orb2 { background: radial-gradient(circle, rgba(0,200,100,0.12), transparent 70%); }
+  body.evening .orb1 { background: radial-gradient(circle, rgba(100,60,255,0.5), transparent 70%); }
+  body.evening .orb2 { background: radial-gradient(circle, rgba(60,100,255,0.4), transparent 70%); }
+
+  @keyframes drift1 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(60px, 40px) scale(1.1); }
+  }
+  @keyframes drift2 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-40px, -60px) scale(1.05); }
+  }
+
+  /* GRID */
+  .grid-lines {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.3;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    transition: opacity 0.8s;
+  }
+
+  /* FLOATING SHAPES */
+  .shapes {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .shape {
+    position: absolute;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: floatShape linear infinite;
+    transition: border-color 0.8s;
+  }
+
+  .shape:nth-child(1) { width: 60px; height: 60px; top: 10%; left: 8%; animation-duration: 20s; animation-delay: 0s; }
+  .shape:nth-child(2) { width: 30px; height: 30px; top: 25%; right: 12%; animation-duration: 14s; animation-delay: -3s; border-radius: 4px; }
+  .shape:nth-child(3) { width: 80px; height: 80px; bottom: 20%; left: 15%; animation-duration: 18s; animation-delay: -6s; }
+  .shape:nth-child(4) { width: 20px; height: 20px; bottom: 35%; right: 8%; animation-duration: 12s; animation-delay: -9s; border-radius: 4px; }
+  .shape:nth-child(5) { width: 45px; height: 45px; top: 60%; left: 5%; animation-duration: 22s; animation-delay: -2s; }
+  .shape:nth-child(6) { width: 25px; height: 25px; top: 15%; left: 40%; animation-duration: 16s; animation-delay: -5s; border-radius: 2px; }
+  .shape:nth-child(7) { width: 55px; height: 55px; bottom: 10%; right: 20%; animation-duration: 19s; animation-delay: -8s; }
+  .shape:nth-child(8) { width: 15px; height: 15px; top: 45%; right: 25%; animation-duration: 11s; animation-delay: -1s; }
+
+  @keyframes floatShape {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+    25% { opacity: 0.5; }
+    50% { transform: translateY(-30px) rotate(180deg); opacity: 0.3; }
+    75% { opacity: 0.5; }
+    100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; }
+  }
+
+  /* DOTS SCATTER */
+  .dots {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .dot {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--text);
+    opacity: 0.15;
+    animation: twinkle ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.05; transform: scale(1); }
+    50% { opacity: 0.25; transform: scale(1.5); }
+  }
+
+  /* MAIN LAYOUT */
+  .page {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 40px 24px;
+  }
+
+  /* NAME */
+  .name {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s var(--transition) 0.1s forwards;
+    margin-bottom: 32px;
+    transition: color 0.8s;
+  }
+
+  /* DONATE BUTTON - BIG GLOWY */
+  .btn-donate-wrap {
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s var(--transition) 0.25s forwards;
+    margin-bottom: 16px;
+  }
+
+  .glow-ring {
+    position: absolute;
+    inset: -20px;
+    border-radius: 40px;
+    background: radial-gradient(ellipse at center, var(--glow-color) 0%, transparent 70%);
+    animation: pulse 3s ease-in-out infinite;
+    pointer-events: none;
+    transition: background 0.8s;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+
+  .btn-donate {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 56px;
+    background: var(--btn-donate);
+    color: var(--btn-donate-text);
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s var(--transition), background 0.8s, color 0.8s;
+    min-width: 260px;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-donate:hover {
+    transform: scale(1.03) translateY(-2px);
+    box-shadow: 0 20px 60px var(--glow-color);
+  }
+
+  .btn-donate:active {
+    transform: scale(0.97);
+  }
+
+  .btn-donate svg {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+  }
+
+  /* SUPPORT BUTTON */
+  .btn-support-wrap {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s var(--transition) 0.4s forwards;
+  }
+
+  .btn-support {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 40px;
+    background: var(--btn-support);
+    color: var(--btn-support-text);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s var(--transition), background 0.8s, color 0.8s, border-color 0.8s;
+    min-width: 260px;
+    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-support:hover {
+    background: var(--surface-hover);
+    transform: translateY(-1px);
+  }
+
+  .btn-support:active { transform: scale(0.97); }
+
+  /* TIME INDICATOR */
+  .time-chip {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    backdrop-filter: blur(12px);
+    transition: all 0.8s var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+    opacity: 0;
+    animation: fadeUp 0.6s var(--transition) 0.8s forwards;
+  }
+
+  .time-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* QR MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--transition);
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .modal-card {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 36px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 340px;
+    width: 100%;
+    transform: scale(0.88) translateY(24px);
+    transition: transform 0.4s var(--transition), background 0.8s, border-color 0.8s;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+  }
+
+  .modal-overlay.open .modal-card {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  .qr-wrap {
+    width: 200px; height: 200px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .qr-wrap img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .modal-hint {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .modal-close {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 12px 32px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .modal-close:hover { background: var(--surface-hover); }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ALERTS MODAL */
+  .alerts-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 0 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--transition);
+  }
+
+  .alerts-modal.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .alerts-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(20px);
+  }
+
+  .alerts-sheet {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 28px 28px 20px 20px;
+    padding: 32px 28px 28px;
+    width: 100%;
+    max-width: 400px;
+    transform: translateY(100%);
+    transition: transform 0.4s var(--transition), background 0.8s;
+    box-shadow: 0 -20px 60px rgba(0,0,0,0.3);
+  }
+
+  .alerts-modal.open .alerts-sheet {
+    transform: translateY(0);
+  }
+
+  .alerts-handle {
+    width: 36px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 24px;
+  }
+
+  .alerts-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .alerts-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .alerts-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+
+  .alerts-link:hover { background: var(--surface-hover); }
+
+  .alerts-link-icon {
+    width: 32px; height: 32px;
+    background: var(--btn-donate);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .alerts-link-icon svg {
+    width: 16px; height: 16px;
+    fill: var(--btn-donate-text);
+  }
+
+  .alerts-close {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 14px;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+  .alerts-close:hover { background: var(--surface-hover); }
+</style>
+</head>
+<body>
+
+<!-- AMBIENT -->
+<div class="ambient">
+  <div class="ambient-orb orb1"></div>
+  <div class="ambient-orb orb2"></div>
+</div>
+
+<!-- GRID -->
+<div class="grid-lines"></div>
+
+<!-- FLOATING SHAPES -->
+<div class="shapes">
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+  <div class="shape"></div>
+</div>
+
+<!-- DOTS -->
+<div class="dots" id="dots"></div>
+
+<!-- TIME CHIP -->
+<div class="time-chip" id="timeChip">
+  <div class="time-dot"></div>
+  <span id="timeLabel">Москва</span>
+</div>
+
+<!-- MAIN -->
+<div class="page">
+  <div class="name">Nikita</div>
+
+  <div class="btn-donate-wrap">
+    <div class="glow-ring"></div>
+    <a href="https://dalink.to/nikita_2218" target="_blank" class="btn-donate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      Donate
+    </a>
+  </div>
+
+  <div class="btn-support-wrap">
+    <button class="btn-support" onclick="openQR()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      Support via QR
+    </button>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <div class="modal-title">Сканируй и поддержи</div>
+    <div class="qr-wrap">
+      <img src="qr.png" alt="QR Code" onerror="this.parentElement.innerHTML='<div style=\'padding:20px;text-align:center;font-size:12px;color:#999\'>QR-код<br>@NM1201</div>'"/>
+    </div>
+    <div class="modal-hint">@NM1201 · Telegram</div>
+    <button class="modal-close" onclick="closeQR()">Закрыть</button>
+  </div>
+</div>
+
+<script>
+// DOTS GENERATION
+const dotsEl = document.getElementById('dots');
+for (let i = 0; i < 40; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.style.left = Math.random() * 100 + '%';
+  d.style.top = Math.random() * 100 + '%';
+  d.style.animationDuration = (3 + Math.random() * 5) + 's';
+  d.style.animationDelay = (-Math.random() * 6) + 's';
+  dotsEl.appendChild(d);
+}
+
+// MOSCOW TIME + THEME
+function getMoscowHour() {
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const moscow = new Date(utc + 3 * 3600000);
+  return moscow.getHours();
+}
+
+function getTheme(hour) {
+  if (hour >= 6 && hour < 18) return 'day';
+  if (hour >= 18 && hour < 22) return 'evening';
+  return 'night'; // default (dark)
+}
+
+function getTimeLabel(hour) {
+  if (hour >= 6 && hour < 12) return '🌅 Москва · утро';
+  if (hour >= 12 && hour < 18) return '☀️ Москва · день';
+  if (hour >= 18 && hour < 22) return '🌆 Москва · вечер';
+  return '🌙 Москва · ночь';
+}
+
+function applyTheme() {
+  const h = getMoscowHour();
+  const theme = getTheme(h);
+  document.body.className = theme === 'night' ? '' : theme;
+  document.getElementById('timeLabel').textContent = getTimeLabel(h);
+}
+
+applyTheme();
+setInterval(applyTheme, 60000);
+
+// QR MODAL
+function openQR() {
+  document.getElementById('qrModal').classList.add('open');
+}
+
+function closeQR(e) {
+  if (!e || e.target === document.getElementById('qrModal') || e.target.closest('.modal-backdrop') || !e.target.closest) {
+    document.getElementById('qrModal').classList.remove('open');
+  }
+}
+
+// ESC close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('qrModal').classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
